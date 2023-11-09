@@ -47,6 +47,12 @@ const userSchema = new mongoose.Schema(
       required: false,
       default: "",
     },
+    publications: [
+      {
+        type: ObjectId,
+        ref: "ProfilePosts",
+      }
+    ],
   },
   {
     timestamps: true,

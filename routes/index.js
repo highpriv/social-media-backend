@@ -6,5 +6,6 @@ const { controllerRootSlash } = require("../controllers");
 
 router.get("/", controllerRootSlash);
 router.use("/auth", authRoutes);
+router.use("/publications", require("./publications"));
 
 module.exports = router;
