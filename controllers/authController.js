@@ -78,6 +78,8 @@ const controller = {
         user: {
           name: user.name,
           lastname: user.lastname,
+          username: user.username,
+          _id: user._id,
         },
       });
     } catch (err) {
