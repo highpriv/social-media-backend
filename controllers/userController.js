@@ -12,7 +12,6 @@ const controller = {
           "title slug summary thumbnail likedBy savedBy"
         )
         .populate("publications", "content images likes createdAt")
-        .populate("joinedGroups", "title members thumbnail")
         .exec()
         .catch((err) => {
           console.log("hataaaaa", err);
@@ -93,6 +92,29 @@ const controller = {
     } catch (error) {
       console.log(error);
       res.status(400).send("Kullanıcı takip edilirken bir hata meydana geldi.");
+    }
+  },
+
+  async getUser(req, res) {
+    const { username } = req.params;
+    try {
+      const user = await Users.findOne({ username })
+        .populate("publications", "content images likes createdAt")
+        .exec()
+        .catch((err) => {
+          console.log("hataaaaa", err);
+        });
+
+      if (!user) {
+        res.status(404).send({ error: "Kullanıcı bulunamadı." });
+      }
+      const userDto = dtos.userDto(user);
+      res.status(200).json(userDto);
+    } catch (error) {
+      console.log(error);
+      res
+        .status(400)
+        .send("Kullanıcı bilgileri getirilirken bir hata meydana geldi.");
     }
   },
 };
