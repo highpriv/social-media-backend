@@ -10,4 +10,6 @@ router.post(
   UserController.followUser
 );
 
+router.get("/:username", UserController.getUser);
+
 module.exports = router;
