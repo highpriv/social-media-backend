@@ -23,7 +23,7 @@ const uploadImageToS3 = async (file) => {
 
     try {
       const result = await Publications.findOne({
-        where: { thumbnail: randomImageName },
+        where: { image: randomImageName },
       });
       if (result) {
         generateRandomImageName(16, file);
