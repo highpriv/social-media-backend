@@ -3,33 +3,6 @@ const Users = require("../models/User");
 const ProfilePosts = require("../models/ProfilePosts");
 const dtos = require("../utils/dtos/index");
 const controller = {
-  async getUser(req, res) {
-    const { username } = req.params;
-    try {
-      const user = await Users.findOne({ username })
-        .populate(
-          "createdContents",
-          "title slug summary thumbnail likedBy savedBy"
-        )
-        .populate("publications", "content images likes createdAt")
-        .exec()
-        .catch((err) => {
-          console.log("hataaaaa", err);
-        });
-
-      if (!user) {
-        res.status(404).send("Kullanıcı bulunamadı.");
-      }
-      const userDto = dtos.userDto(user);
-      res.status(200).json(userDto);
-    } catch (error) {
-      console.log(error);
-      res
-        .status(400)
-        .send("Kullanıcı bilgileri getirilirken bir hata meydana geldi.");
-    }
-  },
-
   async getUsers(req, res, next) {
     try {
       const page = req.query.page || 1;
@@ -100,6 +73,8 @@ const controller = {
     try {
       const user = await Users.findOne({ username })
         .populate("publications", "content images likes createdAt")
+        .populate("userFollowers", "name lastname username")
+        .populate("following", "name lastname username")
         .exec()
         .catch((err) => {
           console.log("hataaaaa", err);

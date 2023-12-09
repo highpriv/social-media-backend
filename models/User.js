@@ -55,7 +55,7 @@ const userSchema = new mongoose.Schema(
     ],
     userFollowers: [
       {
-        type: ObjectId,
+        type: mongoose.Types.ObjectId,
         ref: "User",
       },
     ],
