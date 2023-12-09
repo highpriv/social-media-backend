@@ -17,12 +17,13 @@ const controller = {
         return res.status(404).send("Kullanıcı bulunamadı.");
       }
 
-      const { content } = req.body;
+      const { content, embedVideo } = req.body;
 
       const images = req.files?.image?.map((image) => uploadImageToS3(image));
 
       const newPost = {
         content,
+        embedVideo,
         userID: currentUserId,
         images: images ? await Promise.all(images) : [],
       };
@@ -148,6 +149,28 @@ const controller = {
       res.status(200).json({ message: "İçerik güncellendi.", post: findPost });
     } catch (err) {
       return res.status(500).json({ error: "Bir hata oluştu." });
+    }
+  },
+
+  async getPopularPosts(req, res) {
+    try {
+      const posts = await ProfilePosts.find()
+        .limit(5)
+        .populate("user", "name lastname username");
+
+      if (!posts || posts.length === 0) {
+        return res.status(404).send({
+          message: "İçerik bulunamadı.",
+          publications: [],
+        });
+      }
+
+      res.status(200).send({
+        publications: posts,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send("İçerikler getirilirken bir hata meydana geldi.");
     }
   },
 };

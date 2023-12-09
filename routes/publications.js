@@ -6,6 +6,7 @@ const {
   publishPost,
   getAllPosts,
   contentActionHandler,
+  getPopularPosts,
 } = require("../controllers/postController");
 
 router.post(
@@ -17,5 +18,7 @@ router.post(
 router.get("/", [authenticateMiddleware], getAllPosts);
 
 router.post("/action/:contentId", authenticateMiddleware, contentActionHandler);
+
+router.get("/popular", authenticateMiddleware, getPopularPosts);
 
 module.exports = router;

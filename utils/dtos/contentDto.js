@@ -21,6 +21,7 @@ const contentDto = (contentParam) => {
     quizContent,
     testContent,
     hashtags,
+    embedVideo,
   } = contentParam;
   return {
     _id,
@@ -44,6 +45,7 @@ const contentDto = (contentParam) => {
     quizContent,
     testContent,
     hashtags,
+    embedVideo,
   };
 };
 
