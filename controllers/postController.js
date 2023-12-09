@@ -17,12 +17,13 @@ const controller = {
         return res.status(404).send("Kullanıcı bulunamadı.");
       }
 
-      const { content } = req.body;
+      const { content, embedVideo } = req.body;
 
-      const images = req.files?.map((image) => uploadImageToS3(image));
+      const images = req.files?.image?.map((image) => uploadImageToS3(image));
 
       const newPost = {
         content,
+        embedVideo,
         userID: currentUserId,
         images: images ? await Promise.all(images) : [],
       };
@@ -44,30 +45,64 @@ const controller = {
   },
 
   async getAllPosts(req, res) {
-    const currentUserId = req?.user?._id;
+    const { page, limit, category, type, search } = req.query;
 
-    if (!currentUserId) {
-      return res.status(400).send("Eksik parametre.");
+    const pageNumber = parseInt(page) || 1;
+    const limitNumber = parseInt(limit) || 10;
+    const skip = (pageNumber - 1) * limitNumber;
+    const query = {};
+
+    if (type) {
+      query.type = type;
+    }
+
+    if (category) {
+      query.category = category;
     }
 
     try {
-      const user = await Users.findById(currentUserId);
+      const posts = await ProfilePosts.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNumber)
+        .populate("user", "name lastname username");
 
-      if (!user) {
-        return res.status(404).send("Kullanıcı bulunamadı.");
+      const totalPosts = await ProfilePosts.countDocuments(query);
+
+      if (!posts || posts.length === 0) {
+        return res.status(404).send({
+          message: "İçerik bulunamadı.",
+          publications: [],
+          totalPosts: 0,
+          totalPages: 0,
+          currentPage: 0,
+        });
       }
 
-      const posts = await ProfilePosts.find({})
-        .populate("user")
-        .sort({ createdAt: -1 });
+      //const modifiedPosts = posts.map((post) => dtos.contentDto(post));
 
-      return res.status(200).send({
-        message: "Paylaşımlar başarıyla getirildi.",
+      if (search) {
+        const filteredPosts = posts.filter((post) =>
+          post.content.toLowerCase().includes(search.toLowerCase())
+        );
+
+        return res.status(200).send({
+          publications: filteredPosts,
+          totalPosts: filteredPosts.length,
+          totalPages: Math.ceil(filteredPosts.length / limitNumber),
+          currentPage: pageNumber,
+        });
+      }
+
+      res.status(200).send({
         publications: posts,
+        totalPosts,
+        totalPages: Math.ceil(totalPosts / limitNumber),
+        currentPage: pageNumber,
       });
     } catch (error) {
       console.log(error);
-      res.status(400).send("Paylaşımlar getirilirken bir hata meydana geldi.");
+      res.status(400).send("İçerikler getirilirken bir hata meydana geldi.");
     }
   },
 
@@ -114,6 +149,28 @@ const controller = {
       res.status(200).json({ message: "İçerik güncellendi.", post: findPost });
     } catch (err) {
       return res.status(500).json({ error: "Bir hata oluştu." });
+    }
+  },
+
+  async getPopularPosts(req, res) {
+    try {
+      const posts = await ProfilePosts.find()
+        .limit(5)
+        .populate("user", "name lastname username");
+
+      if (!posts || posts.length === 0) {
+        return res.status(404).send({
+          message: "İçerik bulunamadı.",
+          publications: [],
+        });
+      }
+
+      res.status(200).send({
+        publications: posts,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send("İçerikler getirilirken bir hata meydana geldi.");
     }
   },
 };

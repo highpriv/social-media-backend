@@ -21,6 +21,9 @@ const ProfilePostSchema = new Schema(
         ref: "User",
       },
     ],
+    embedVideo: {
+      type: String,
+    },
   },
   {
     timestamps: true,

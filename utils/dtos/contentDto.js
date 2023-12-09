@@ -6,6 +6,7 @@ const contentDto = (contentParam) => {
     type,
     slug,
     category,
+    images,
     content,
     summary,
     thumbnail,
@@ -20,6 +21,7 @@ const contentDto = (contentParam) => {
     quizContent,
     testContent,
     hashtags,
+    embedVideo,
   } = contentParam;
   return {
     _id,
@@ -28,6 +30,7 @@ const contentDto = (contentParam) => {
     type,
     slug,
     category,
+    images,
     content,
     summary,
     thumbnail,
@@ -42,6 +45,7 @@ const contentDto = (contentParam) => {
     quizContent,
     testContent,
     hashtags,
+    embedVideo,
   };
 };
 
