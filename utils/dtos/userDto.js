@@ -12,7 +12,6 @@ const userDto = (contentParam) => {
     profilePhoto,
     coverPhoto,
     joinedGroups,
-    registered,
     createdContents,
     publications,
   } = contentParam;
@@ -23,7 +22,6 @@ const userDto = (contentParam) => {
     username,
     email,
     joinedGroups,
-    registered,
     achievement,
     userFollowers,
     following,
